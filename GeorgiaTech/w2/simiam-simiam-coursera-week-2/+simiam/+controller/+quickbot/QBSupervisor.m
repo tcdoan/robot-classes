@@ -56,7 +56,8 @@ classdef QBSupervisor < simiam.controller.Supervisor
                                
             obj.prev_ticks = struct('left', 0, 'right', 0);
             
-            obj.theta_d     = pi/4;
+            % obj.theta_d     = pi/4;
+            obj.theta_d     = 0;
             obj.v           = 0.1;
             
             obj.p = []; %simiam.util.Plotter();
@@ -171,11 +172,16 @@ classdef QBSupervisor < simiam.controller.Supervisor
             m_per_tick = (2*pi*R)/obj.robot.encoders(1).ticks_per_rev;
             
             %% START CODE BLOCK %%
+            % check if m_per_tick_l = m_per_tick ?
+            % m_per_tick_l = (2*pi*R)/obj.robot.encoders(2).ticks_per_rev;
             
-            x_dt = 0;
-            y_dt = 0;
-            theta_dt = 0;
+            dist_r = m_per_tick * (right_ticks - prev_right_ticks);
+            dist_l = m_per_tick * (left_ticks - prev_left_ticks);
+            dist_c = (dist_r + dist_l) / 2;
             
+            x_dt = dist_c * cos(theta);
+            y_dt = dist_c * sin(theta);            
+            theta_dt = (dist_r - dist_l) / L;            
             %% END CODE BLOCK %%
             
             theta_new = theta + theta_dt;
